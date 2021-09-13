@@ -21,7 +21,9 @@ const db = mysql.createConnection
     host: process.env.DB_HOST,
     username: process.env.DB_USER,
     password: process.env.DB_PASS
-});
+    }, 
+    console.log(`Connected to Employee Tracker Database.`)
+);
 
 // const db = mysql.createConnection (
 //     {
@@ -39,19 +41,21 @@ app.listen(PORT, () =>
 );
 
 function init() {
-
-    // Prompt User
-    inquirer.prompt(options)
-    // TODO: Options
-    
-        // 'View all departments', 
-        // 'View all roles', 
-        // 'View all employees', 
-        // 'Add a department', 
-        // 'Add a role', 
-        // 'Update employee role'
-        // 'Quit'
-    
+    // Prompt User w/Inquirer package
+    inquirer.prompt([{
+    // Options to begin program
+        type: 'list',
+        name: 'options',
+        message: 'What would you like to do?',
+        choices : [
+            'View all departments', 
+            'View all roles', 
+            'View all employees', 
+            'Add a department', 
+            'Add a role', 
+            'Update employee role',
+            'Quit' ]
+    }])
     .then(userInput)
     // TODO: Functions per userInput
 
@@ -65,4 +69,5 @@ function init() {
 
 };
 
+// Function to initialize application
 init();
