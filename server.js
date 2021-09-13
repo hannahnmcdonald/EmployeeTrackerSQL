@@ -16,12 +16,22 @@ app.use(express.urlencoded({
 }));
 
 // Imports db info from .env for password privacy
-const db = require('db')
-db.connect({
-  host: process.env.DB_HOST,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASS
-})
+const db = mysql.createConnection
+    db.connect({
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS
+});
+
+// const db = mysql.createConnection (
+//     {
+//         host: 'localhost',
+//         user: 'root',
+//         password: '',
+//         database: '',
+//     },
+//     console.info('Connected to Employee Tracker Database')
+// );
 
 // Port is listening
 app.listen(PORT, () =>
@@ -31,11 +41,28 @@ app.listen(PORT, () =>
 function init() {
 
     // Prompt User
-    inquirer.prompt()
-    // TODO: Questions
-
+    inquirer.prompt(options)
+    // TODO: Options
+    
+        // 'View all departments', 
+        // 'View all roles', 
+        // 'View all employees', 
+        // 'Add a department', 
+        // 'Add a role', 
+        // 'Update employee role'
+        // 'Quit'
+    
     .then(userInput)
     // TODO: Functions per userInput
+
+    // viewDepts();
+    // viewRoles();
+    // viewEmployees();
+    // addDept();
+    // addRole();
+    // updateEmployee();
+    // quitProgram();
+
 };
 
 init();
