@@ -2,6 +2,7 @@
 const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+require('dotenv').config();
 
 // Initialize App w/Express
 const app = express();
@@ -16,19 +17,23 @@ app.use(express.urlencoded({
 }));
 
 // Connects to database + .env for password privacy
-const db = mysql.createConnection
-    db.connect({
+const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     username: process.env.DB_USER,
-    password: process.env.DB_PASS
-    }, 
-    console.log(`Connected to Employee Tracker Database.`)
+    password: process.env.DB_PASS,
+    port: PORT
+    }
 );
 
-// Listening
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+connection.connect((err) => {
+    if (err) {
+        console.log(err)
+    } else {
+        console.log("Connected to Employee Tracker")
+    }
+    // Calls Starting Fx
+    init();
+})
 
 // Init fx
 function init() {
@@ -94,7 +99,7 @@ function viewDepts() {
         if (err) {
             console.log(err)
         }
-        // console.log("Viewing all employees");
+        // console.log("Viewing all departments");
         console.table(res);
         init();
     })
@@ -143,5 +148,3 @@ function updateEmployee() {
 function exitProgram() {
     // Exit program
 };
-// Function to initialize application
-init();
