@@ -3,7 +3,7 @@ const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
-// Initialize App
+// Initialize App w/Express
 const app = express();
 
 // Create Port
@@ -29,18 +29,8 @@ const db = mysql.createConnection
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-  
 
-// const db = mysql.createConnection (
-//     {
-//         host: 'localhost',
-//         user: 'root',
-//         password: '',
-//         database: '',
-//     },
-//     console.info('Connected to Employee Tracker Database')
-// );
-
+// Init fx
 function init() {
     // Prompt User w/Inquirer package
     inquirer.prompt([{
@@ -57,41 +47,40 @@ function init() {
             'Add employee',
             'Update employee role',
             'Exit' 
-        ]
-    }
+        ]}
     ]).then((userInput) => {
         switch(userInput.options) {
             // Calls viewDept function
             case 'View all departments': viewDepts();
-            console.log('View departments')
+            // console.log('View departments')
             break;
             // Calls viewRoles function
             case 'View all roles': viewRoles();
-            console.log('View roles')
+            // console.log('View roles')
             break;
             // Calls viewEmployees function
             case 'View all employees': viewEmployees();
-            console.log('View employees')
+            // console.log('View employees')
             break;
             // Calls addDept function
             case 'Add a department': addDept();
-            console.log('Add department')
+            // console.log('Add department')
             break;
             // Calls addRole function
             case 'Add a role': addRole();
-            console.log('Add role')
+            // console.log('Add role')
             break;
             // Calls addEmployee function
             case 'Add employee': addEmployee();
-            console.log('Add employee')
+            // console.log('Add employee')
             break;
             // Calls updateEmployee function
             case 'Update employee role': updateEmployee();
-            console.log('Update employee role')
+            // console.log('Update employee role')
             break;
             // Calls exitProgram function
             case 'Exit': exitProgram();
-            console.log('You have exited the program')
+            // console.log('You have exited the program')
             break;
 
         }
@@ -101,14 +90,38 @@ function init() {
 
 function viewDepts() {
     // Show dept names + Ids
+    db.query('SELECT * FROM department', (err, res) => {
+        if (err) {
+            console.log(err)
+        }
+        // console.log("Viewing all employees");
+        console.table(res);
+        init();
+    })
 };
 
 function viewRoles() {
     // Show job title, role id, department + salary
+    db.query('SELECT * FROM roles', (err, res) => {
+        if (err) {
+            console.log(err)
+        }
+        // console.log("Viewing all roles");
+        console.table(res);
+        init();
+    })
 };
 
 function viewEmployees() {
     // Show employee id, first name, last name, job title, department, sallaries, + managers
+    db.query('SELECT * FROM employees', (err, res) => {
+        if (err) {
+            console.log(err)
+        }
+        // console.log("Viewing all employees");
+        console.table(res);
+        init();
+    })
 };
 
 function addDept() {
