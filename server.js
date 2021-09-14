@@ -2,6 +2,7 @@
 const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const consoleTable = require("console.table");
 require('dotenv').config();
 
 // Initialize App w/Express
@@ -95,7 +96,7 @@ function init() {
 
 function viewDepts() {
     // Show dept names + Ids
-    db.query('SELECT * FROM department', (err, res) => {
+    connection.query('SELECT * FROM department', (err, res) => {
         if (err) {
             console.log(err)
         }
@@ -107,7 +108,7 @@ function viewDepts() {
 
 function viewRoles() {
     // Show job title, role id, department + salary
-    db.query('SELECT * FROM roles', (err, res) => {
+    connection.query('SELECT * FROM roles', (err, res) => {
         if (err) {
             console.log(err)
         }
@@ -119,7 +120,7 @@ function viewRoles() {
 
 function viewEmployees() {
     // Show employee id, first name, last name, job title, department, sallaries, + managers
-    db.query('SELECT * FROM employees', (err, res) => {
+    connection.query('SELECT * FROM employees', (err, res) => {
         if (err) {
             console.log(err)
         }
@@ -130,15 +131,96 @@ function viewEmployees() {
 };
 
 function addDept() {
-    // Enter department name + adds to db
+    // Enter department name + add to db
+    inquirer.prompt({
+        type: "input",
+        name: "departmentName",
+        message: "What is the new department name?",
+    })
+    .then((answer) => {
+
+    })
 };
 
 function addRole() {
-    // Enter role name, salary + department then adds to db
+    // Enter role name, salary + department then add to db
 };
 
 function addEmployee() {
     // Enter employee id, first name, last name, salary, dept, + manager then add to db
+    connection.query('SELECT * FROM roles', (err, res) => {
+        if (err) {
+            console.log(err)
+        } else {
+            return inquirer.prompt([
+                {
+                    type: "input",
+                    name: "firstName",
+                    message: "Enter the employee's first name",
+                    validate: (answer) => {
+                        if (answer !== "") {
+                            return true;
+                        } else {
+                    return "First name cannot be blank";
+                        }
+                    }
+                },
+                {
+                    type: "input",
+                    name: "lastName",
+                    message: "Enter the employee's last name",
+                    validate: (answer) => {
+                        if (answer === "") {
+                            return true;
+                        } else {
+                    return "Last name cannot be blank";
+                        }
+                    }
+                },
+                {
+                    type: "input",
+                    name: "roleId",
+                    message: "Enter the employee's role ID",
+                    validate: (answer) => {
+                        if (answer === isNaN) {
+                            return "Employee role ID must be numerical";
+                        } else {
+                    return true; 
+                        }
+                    }
+                },
+                {
+                    type: "input",
+                    name: "managerId",
+                    message: "Enter the employee's manager ID",
+                    validate: (answer) => {
+                        if (answer === isNaN) {
+                            return "Manager ID must be numerical";
+                        } else {
+                    return true; 
+                        }
+                    }
+                },
+            ])
+            .then(function (answer) {
+                connection.query(
+                    "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+                    [answer.firstName, answer.lastName, answer.roleId, answer.managerId],
+                    function (err, res) {
+                        if (err) {
+                            console.log (err)
+                        } 
+                        console.log(
+                            `${answer.firstName} ${answer.lastName} has been added to the team!`
+                        );
+                    
+                        console.log("Employee added successfully!");
+                        init();
+                    }
+                )
+            })
+        }
+    })
 }
 
 function updateEmployee() {
