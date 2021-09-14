@@ -2,7 +2,7 @@
 const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const consoleTable = require("console.table");
+const consoleTable = require('console.table');
 require('dotenv').config();
 
 // Initialize App w/Express
@@ -22,7 +22,8 @@ const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
-    port: PORT
+    port: PORT,
+    database: "employee_tracker"
     }
 );
 
@@ -77,7 +78,7 @@ function init() {
             // console.log('Add role')
             break;
             // Calls addEmployee function
-            case 'Add employee': addEmployee();
+            case "Add employee": addEmployee();
             // console.log('Add employee')
             break;
             // Calls updateEmployee function
@@ -100,7 +101,7 @@ function viewDepts() {
         if (err) {
             console.log(err)
         }
-        // console.log("Viewing all departments");
+        console.log("Viewing all departments");
         console.table(res);
         init();
     })
