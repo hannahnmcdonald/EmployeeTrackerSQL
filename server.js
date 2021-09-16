@@ -19,23 +19,29 @@ app.use(express.urlencoded({
 
 // Connects to database + .env for password privacy
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    port: PORT,
-    database: "employee_tracker"
-    }
+        host: "localhost",
+        user: "root",
+        password: process.env.DB_PASS,
+        port: PORT,
+        database: "employee_tracker",
+        // Added connectTimeout due to frequent ._handleTimeoutError
+        connectTimeout: 300000
+    },
+    console.log("Connected to Employee Tracker")
 );
 
-connection.connect((err) => {
+// Check for connection errors
+connection.connect(function(err) {
     if (err) {
-        console.log(err)
-    } else {
-        console.log("Connected to Employee Tracker")
+      console.error('error connecting: ', err);
+      return;
     }
-    // Calls Starting Fx
-    init();
-})
+  });
+
+//  Listening
+app.listen(PORT, () =>
+  console.log(`Employee Tracker application listening at http://localhost:${PORT}`)
+);
 
 // Init fx
 function init() {
@@ -58,37 +64,37 @@ function init() {
     ]).then((userInput) => {
         switch(userInput.options) {
             // Calls viewDept function
-            case 'View all departments': viewDepts();
-            // console.log('View departments')
+            case ('View all departments'): viewDepts();
+            console.log('View departments')
             break;
             // Calls viewRoles function
-            case 'View all roles': viewRoles();
-            // console.log('View roles')
+            case ('View all roles'): viewRoles();
+            console.log('View roles')
             break;
             // Calls viewEmployees function
-            case 'View all employees': viewEmployees();
-            // console.log('View employees')
+            case ('View all employees'): viewEmployees();
+            console.log('View employees')
             break;
             // Calls addDept function
-            case 'Add a department': addDept();
-            // console.log('Add department')
+            case ('Add a department'): addDept();
+            console.log('Add department')
             break;
             // Calls addRole function
-            case 'Add a role': addRole();
-            // console.log('Add role')
+            case ('Add a role'): addRole();
+            console.log('Add role')
             break;
             // Calls addEmployee function
-            case "Add employee": addEmployee();
-            // console.log('Add employee')
+            case ("Add employee"): addEmployee();
+            console.log('Add employee')
             break;
             // Calls updateEmployee function
-            case 'Update employee role': updateEmployee();
-            // console.log('Update employee role')
+            case ('Update employee role'): updateEmployee();
+            console.log('Update employee role')
             break;
             // Calls exitProgram function
-            case 'Exit': exitProgram();
-            // console.log('You have exited the program')
-            break;
+            case ('Exit'): 
+            console.log('You have exited the program')
+            connection.end();
 
         }
     })
@@ -96,8 +102,8 @@ function init() {
 };
 
 function viewDepts() {
-    // Show dept names + Ids
-    connection.query('SELECT * FROM department', (err, res) => {
+    // Expected Behavior: Show dept names + Ids
+    connection.query('SELECT FROM department', (err, res) => {
         if (err) {
             console.log(err)
         }
@@ -108,48 +114,105 @@ function viewDepts() {
 };
 
 function viewRoles() {
-    // Show job title, role id, department + salary
-    connection.query('SELECT * FROM roles', (err, res) => {
+    // Expected Behavior: Show job title, role id, department + salary
+    connection.query('SELECT FROM roles', (err, res) => {
         if (err) {
             console.log(err)
         }
-        // console.log("Viewing all roles");
+        console.log("Viewing all roles");
         console.table(res);
         init();
     })
 };
 
 function viewEmployees() {
-    // Show employee id, first name, last name, job title, department, sallaries, + managers
-    connection.query('SELECT * FROM employees', (err, res) => {
+    // Expected Behavior: Show employee id, first name, last name, job title, department, sallaries, + managers
+    connection.query('SELECT FROM employees', (err, res) => {
         if (err) {
             console.log(err)
         }
-        // console.log("Viewing all employees");
+        console.log("Viewing all employees");
         console.table(res);
         init();
     })
 };
 
 function addDept() {
-    // Enter department name + add to db
+    // Expected Behavior: Enter department name + add to db
     inquirer.prompt({
         type: "input",
         name: "departmentName",
         message: "What is the new department name?",
     })
     .then((answer) => {
+            let department_name = answer.departmentName;
 
+            connection.query(
+            `INSERT INTO department (department_name) VALUES ("${department_name}")`,
+            (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+                console.log(`${department_name} has been added to departments!`);
+            }
+        );
+
+        init();
     })
 };
 
 function addRole() {
-    // Enter role name, salary + department then add to db
+    // Expected Behavior: Enter role name, salary + department then add to db
+    connection.query('SELECT FROM department', (err, res) => {
+        if (err) {
+            console.log(err)
+        } else {
+            return inquirer.prompt([
+                {
+                    type: "input",
+                    name: "role",
+                    message: "Enter a new role",
+                },
+                {
+                    type: "input",
+                    name: "salary",
+                    message: "Enter the salary for this role",
+                },
+                {
+                    type: "list",
+                    name: "department",
+                    message: "What department is this role in?",
+                    choices: () => {
+                        let departmentArray = [];
+                        for (let i = 0; i < res.length; i++) {
+                            departmentArray.push(res[i].dept_name + " | " + res[i].id);
+                        }
+                        return departmentArray;
+                    },
+                },
+            ])
+            .then(function (choice) {
+                let dept = choice.department.split("|")[i];
+
+                connection.query(
+                    `INSERT INTO employee (title, department_id, salary) VALUES ("${choice.role}", ${dept}, "${choice.salary}") `,
+
+                    (err) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                    console.log(`"${choice.role}" added successfully!`);
+                    init();
+                    }
+                )
+            })
+        }
+    })
 };
 
 function addEmployee() {
-    // Enter employee id, first name, last name, salary, dept, + manager then add to db
-    connection.query('SELECT * FROM roles', (err, res) => {
+    // Expected Behavior: Enter employee id, first name, last name, salary, dept, + manager then add to db
+    connection.query('SELECT FROM roles', (err, res) => {
         if (err) {
             console.log(err)
         } else {
@@ -225,9 +288,8 @@ function addEmployee() {
 }
 
 function updateEmployee() {
-    // Enter new employee role, then add to db
+    // Expected Behavior: Enter new employee role, then add to db
+
 }
 
-function exitProgram() {
-    // Exit program
-};
+init();
