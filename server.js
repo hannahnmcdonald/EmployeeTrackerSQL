@@ -104,7 +104,9 @@ function viewDepts() {
     // Expected Behavior: Show dept names + Ids
     // console.log("Viewing all departments");
     connection.query("SELECT * FROM department", function (err, res) {
-        if (err) throw err;
+        if (err) {
+            console.log(err)
+        };
         printTable(res);
         init();
     })
@@ -114,7 +116,9 @@ function viewRoles() {
     // Expected Behavior: Show job title, role id, department + salary
     // console.log("Viewing all roles");
     connection.query("SELECT * FROM role", function (err, res) {
-        if (err) throw err;
+        if (err) {
+            console.log(err)
+        };
         printTable(res);
         init();
     })
@@ -124,7 +128,9 @@ function viewEmployees() {
     // Expected Behavior: Show employee id, first name, last name, job title, department, sallaries, + managers
     // console.log("Viewing employees");
     connection.query("SELECT * FROM employee", (err, res) => {
-        if (err) throw err;
+        if (err) {
+            console.log(err)
+        };
         // console.log("Viewing all employees");
         printTable(res);
         init();
@@ -138,8 +144,8 @@ function addDept() {
         name: "departmentName",
         message: "What is the new department name?",
     })
-    .then((answer) => {
-            let departmentName = answer.departmentName;
+    .then((userInput) => {
+            let departmentName = userInput.departmentName;
 
             connection.query(
             `INSERT INTO department (department_name) VALUES ("${departmentName}")`,
@@ -184,16 +190,16 @@ function addRole() {
                 },
             },
         ])
-        .then(function (choice) {
-            let dept = choice.department.split("|")[1];
+        .then(function (userInput) {
+            let dept = userInput.department.split("|")[1];
 
             connection.query(
-                `INSERT INTO employee (title, department_id, salary) VALUES ("${choice.role}", ${dept}, "${choice.salary}") `,
+                `INSERT INTO employee (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `,
                 (err) => {
                     if (err) {
                         console.log(err)
                     }
-                    console.log(`"${choice.role}" added successfully!`);
+                    console.log(`"${userInput.role}" added successfully!`);
                     init();
                     }
                 )
@@ -208,13 +214,15 @@ function addEmployee() {
         if (err) {
             console.log(err)
         } else {
-            return inquirer.prompt([
+            return inquirer
+            .prompt([
                 {
                     type: "input",
                     name: "firstName",
                     message: "Enter the employee's first name",
-                    validate: (answer) => {
-                        if (answer !== "") {
+                // Validate to make sure answer is string
+                    validate: (userInput) => {
+                        if (userInput !== "") {
                             return true;
                         } else {
                     return "First name cannot be blank";
@@ -225,8 +233,9 @@ function addEmployee() {
                     type: "input",
                     name: "lastName",
                     message: "Enter the employee's last name",
-                    validate: (answer) => {
-                        if (answer !== "") {
+                // Validate to make sure answer is string
+                    validate: (userInput) => {
+                        if (userInput !== "") {
                             return true;
                         } else {
                         return "Last name cannot be blank";
@@ -237,8 +246,9 @@ function addEmployee() {
                     type: "input",
                     name: "roleId",
                     message: "Enter the employee's role ID",
-                    validate: (answer) => {
-                        if (answer === isNaN) {
+                // Validate to make sure answer is number
+                    validate: (userInput) => {
+                        if (userInput === isNaN) {
                             return "Employee role ID must be numerical";
                         } else {
                     return true; 
@@ -249,8 +259,9 @@ function addEmployee() {
                     type: "input",
                     name: "managerId",
                     message: "Enter the employee's manager ID",
-                    validate: (answer) => {
-                        if (answer === isNaN) {
+                // Validate to make sure answer is number
+                    validate: (userInput) => {
+                        if (userInput === isNaN) {
                             return "Manager ID must be numerical";
                         } else {
                     return true; 
@@ -258,19 +269,20 @@ function addEmployee() {
                     }
                 },
             ])
-            .then(function (answer) {
+            .then(function (userInput) {
                 connection.query(
                     "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
-                    [answer.firstName, answer.lastName, answer.roleId, answer.managerId],
+                    [userInput.firstName, userInput.lastName, userInput.roleId, userInput.managerId],
                     function (err, res) {
                         if (err) {
                             console.log (err)
                         } 
                         console.log(
-                            `${answer.firstName} ${answer.lastName} has been added to the team!`
+                            `${userInput.firstName} ${userInput.lastName} has been added to the team!`
                         );
                     
                         console.log("Employee added successfully!");
+                        // printTable(res);
                         init();
                     }
                 )
@@ -281,5 +293,58 @@ function addEmployee() {
 
 function updateEmployee() {
     // Expected Behavior: Enter new employee role, then add to db
+    connection.query("SELECT * FROM employee", (err, res) => {
+        if (err) {
+            console.log(err)
+        } 
+        return (
+            inquirer
+            .prompt([
+                {
+                    type: "list",
+                    name: "employeeNames",
+                    message: "Which employee do you want to update?",
+                    choices: () => {
+                        var employeeNames = [];
+                            for (let i = 0; i < res.length; i++) {
+                            employeeNames.push(res[i].first_name + " " + res[i].last_name);
+                        }
+                        return employeeNames;
+                    },
+                },
+            ])
+            .then((userInput) => {
+                let fullName = userInput.employeeNames;
+                let splitName = fullName.split(" ");
 
-}
+                connection.query("SELECT * FROM roles", (err, res) => {
+                    inquirer
+                    .prompt([
+                        {
+                            type: "list",
+                            name: "role",
+                            message: "Which employee role would you like to update?",
+                            choices: () => {
+                                let roleArray = [];
+                                for (let i = 0; i < res.length; i++) {
+                                    roleArray.push(res[i].title + " | " + res[i].id);
+                                }
+                                return roleArray;
+                            },
+                        },
+                    ])
+                    .then((userInput) => {
+                        let roleId = userInput.role.split("|")[1];
+                        connection.query(`UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`, (err, res) => {
+                            if (err) {
+                                console.log(err)
+                            }
+                            console.log(`${splitName} role updated successfully!`)
+                            init();
+                        })
+                    })
+                })
+            })
+        )
+    })
+};
