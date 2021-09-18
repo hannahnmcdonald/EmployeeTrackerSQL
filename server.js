@@ -38,6 +38,7 @@ connection.connect(function (err) {
         console.log("unable to connect")
     };
     console.log('Connected to Employee Database');
+    // Initializes main prompt fx to begin application
     init();
 });
 
@@ -57,7 +58,6 @@ function init(connection) {
             'Add a role', 
             'Add employee',
             'Update employee role',
-            'Exit' 
         ]}
     ]).then((userInput) => {
         switch(userInput.options) {
@@ -89,11 +89,6 @@ function init(connection) {
             case ('Update employee role'): updateEmployee();
             // console.log('Update employee role')
             break;
-            // Calls exitProgram function
-            case ('Exit'): 
-            console.log('You have exited the program')
-            connection.end();
-
         }
     })
     
@@ -102,37 +97,42 @@ function init(connection) {
 
 function viewDepts() {
     // Expected Behavior: Show dept names + Ids
-    // console.log("Viewing all departments");
+    // TEST: console.log("Viewing all departments");
     connection.query("SELECT * FROM department", function (err, res) {
         if (err) {
             console.log(err)
         };
+        // Using Print-Console-Table npm package to view results
         printTable(res);
+        // Initializes main prompt function
         init();
     })
 };
 
 function viewRoles() {
     // Expected Behavior: Show job title, role id, department + salary
-    // console.log("Viewing all roles");
+    // TEST: console.log("Viewing all roles");
     connection.query("SELECT * FROM role", function (err, res) {
         if (err) {
             console.log(err)
         };
+        // Using Print-Console-Table npm package to view results
         printTable(res);
+        // Initializes main prompt function
         init();
     })
 };
 
 function viewEmployees() {
     // Expected Behavior: Show employee id, first name, last name, job title, department, sallaries, + managers
-    // console.log("Viewing employees");
+    // TEST: console.log("Viewing employees");
     connection.query("SELECT * FROM employee", (err, res) => {
         if (err) {
             console.log(err)
         };
-        // console.log("Viewing all employees");
+        // Using Print-Console-Table npm package to view results
         printTable(res);
+        // Initializes main prompt function
         init();
     })
 };
@@ -147,16 +147,15 @@ function addDept() {
     .then((userInput) => {
             let departmentName = userInput.departmentName;
 
-            connection.query(
-            `INSERT INTO department (department_name) VALUES ("${departmentName}")`,
-            (err, res) => {
+            connection.query(`INSERT INTO department (department_name) VALUES ("${departmentName}")`, (err, res) => {
+                // Console logs if error occurs
                 if (err) {
                     console.log(err);
                 }
                 console.log(`${departmentName} has been added to departments!`);
             }
         );
-
+        // Returns to main prompt fx
         init();
     })
 };
@@ -183,23 +182,25 @@ function addRole() {
                         message: "What department is this role in?",
                         choices: () => {
                             let departmentArray = [];
+                            // Creates an array from the department table data from the mysql query
                             for (let i = 0; i < res.length; i++) {
-                                departmentArray.push(res[i].department_name + " | " + res[i].id);
+                            // Pushes department name & Id
+                            departmentArray.push(res[i].department_name + " | " + res[i].id);
                     }
                     return departmentArray;
                 },
             },
         ])
         .then(function (userInput) {
+            // Splits dept
             let dept = userInput.department.split("|")[1];
-
-            connection.query(
-                `INSERT INTO employee (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `,
-                (err) => {
+            connection.query(`INSERT INTO role (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `, (err, res) => {
+                // Console logs error
                     if (err) {
                         console.log(err)
                     }
-                    console.log(`"${userInput.role}" added successfully!`);
+                    console.log(`"${userInput.role}" role added successfully!`);
+                    // Returns to main prompt fx
                     init();
                     }
                 )
@@ -220,7 +221,7 @@ function addEmployee() {
                     type: "input",
                     name: "firstName",
                     message: "Enter the employee's first name",
-                // Validate to make sure answer is string
+                    // Validate to make sure answer is string
                     validate: (userInput) => {
                         if (userInput !== "") {
                             return true;
@@ -233,7 +234,7 @@ function addEmployee() {
                     type: "input",
                     name: "lastName",
                     message: "Enter the employee's last name",
-                // Validate to make sure answer is string
+                    // Validate to make sure answer is string
                     validate: (userInput) => {
                         if (userInput !== "") {
                             return true;
@@ -246,7 +247,7 @@ function addEmployee() {
                     type: "input",
                     name: "roleId",
                     message: "Enter the employee's role ID",
-                // Validate to make sure answer is number
+                    // Validate to make sure answer is number
                     validate: (userInput) => {
                         if (userInput === isNaN) {
                             return "Employee role ID must be numerical";
@@ -259,7 +260,7 @@ function addEmployee() {
                     type: "input",
                     name: "managerId",
                     message: "Enter the employee's manager ID",
-                // Validate to make sure answer is number
+                    // Validate to make sure answer is number
                     validate: (userInput) => {
                         if (userInput === isNaN) {
                             return "Manager ID must be numerical";
@@ -270,19 +271,16 @@ function addEmployee() {
                 },
             ])
             .then(function (userInput) {
-                connection.query(
-                    "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
-                    [userInput.firstName, userInput.lastName, userInput.roleId, userInput.managerId],
-                    function (err, res) {
+                // Inserts new userInput data into employee table
+                connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`,
+                [userInput.firstName, userInput.lastName, userInput.roleId, userInput.managerId],(err, res) => {
+                        // Console Logs error if there is one
                         if (err) {
                             console.log (err)
                         } 
-                        console.log(
-                            `${userInput.firstName} ${userInput.lastName} has been added to the team!`
-                        );
-                    
-                        console.log("Employee added successfully!");
-                        // printTable(res);
+                        // Console Logs that task has been completed
+                        console.log(`${userInput.firstName} ${userInput.lastName} has been added to the team!`);
+                        // Return to main prompt function
                         init();
                     }
                 )
@@ -292,59 +290,75 @@ function addEmployee() {
 }
 
 function updateEmployee() {
-    // Expected Behavior: Enter new employee role, then add to db
+// Expected Behavior: Enter new employee role, then add to db
     connection.query("SELECT * FROM employee", (err, res) => {
+        // Console Logs error if there is one
         if (err) {
             console.log(err)
-        } 
+        };
         return (
-            inquirer
+          inquirer
+            //   Prompt asks who's role you would like to update
             .prompt([
-                {
-                    type: "list",
-                    name: "employeeNames",
-                    message: "Which employee do you want to update?",
-                    choices: () => {
-                        var employeeNames = [];
-                            for (let i = 0; i < res.length; i++) {
-                            employeeNames.push(res[i].first_name + " " + res[i].last_name);
-                        }
-                        return employeeNames;
-                    },
+              {
+                type: "list",
+                name: "name",
+                message: "Whose role are you updating?",
+                choices: () => {
+                  let employeeArray = [];
+                  //Creates array of employees from the result of the mysql query for the employee table
+                  for (let i = 0; i < res.length; i++) {
+                    //   Pushes the first name and last name from the array
+                    employeeArray.push(res[i].first_name + " " + res[i].last_name);
+                  }
+                  return employeeArray;
                 },
+              },
             ])
             .then((userInput) => {
-                let fullName = userInput.employeeNames;
-                let splitName = fullName.split(" ");
-
-                connection.query("SELECT * FROM roles", (err, res) => {
-                    inquirer
-                    .prompt([
-                        {
-                            type: "list",
-                            name: "role",
-                            message: "Which employee role would you like to update?",
-                            choices: () => {
-                                let roleArray = [];
-                                for (let i = 0; i < res.length; i++) {
-                                    roleArray.push(res[i].title + " | " + res[i].id);
-                                }
-                                return roleArray;
-                            },
-                        },
-                    ])
-                    .then((userInput) => {
-                        let roleId = userInput.role.split("|")[1];
-                        connection.query(`UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`, (err, res) => {
-                            if (err) {
-                                console.log(err)
+            // Combine first name + last name
+              let fullName = userInput.name;
+              console.log(fullName);
+              connection.query("SELECT * FROM role", (err, res) => {
+                inquirer
+                // Prompt asks what role you would like to assign
+                  .prompt([
+                    {
+                      type: "list",
+                      name: "role",
+                      message: `What role would you like to assign to ${fullName}?`,
+                      choices: () => {
+                        let roleArray = [];
+                        // Role Array created from the result of the mysql query for the role table
+                        for (let i = 0; i < res.length; i++) {
+                            // Pushes the role title & ID from the array
+                          roleArray.push(res[i].title + " | " + res[i].id);
+                        }
+                        console.log();
+                        return roleArray;
+                      },
+                    },
+                  ])
+                  .then((choice) => {
+                    // This splits the employee and the role
+                    let roleId = choice.role.split("|")[1];
+                    // Updates the DB with the role- uses the indexes of fullName for first/last name
+                    connection.query(`UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${fullName[0]}" and last_name = "${fullName[1]}"`, (err, res) => {
+                        if (err) {
+                            console.log(err)
+                        };
+                        console.log(`${fullName} role changed successfully`);
+                        // Returns to main questions prompt
+                        init();
                             }
-                            console.log(`${splitName} role updated successfully!`)
-                            init();
-                        })
-                    })
-                })
+                        );
+                    });
+                });
             })
-        )
-    })
+        );
+    });
 };
+
+
+
+
