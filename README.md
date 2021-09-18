@@ -12,8 +12,6 @@ A simple employee tracker application run in the command line made from MySQL, n
 AS A business owner
 I WANT to be able to view and manage the departments, roles, and employees in my company
 SO THAT I can organize and plan my business
-
-
 ```
 
 ## Acceptance Criteria 
