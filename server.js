@@ -155,133 +155,131 @@ function addDept() {
     })
 };
 
-// function addRole() {
-//     // Expected Behavior: Enter role name, salary + department then add to db
-//     connection.query("SELECT * FROM department", (err, res) => {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             return inquirer.prompt([
-//                 {
-//                     type: "input",
-//                     name: "role",
-//                     message: "Enter a new role",
-//                 },
-//                 {
-//                     type: "input",
-//                     name: "salary",
-//                     message: "Enter the salary for this role",
-//                 },
-//                 {
-//                     type: "list",
-//                     name: "department",
-//                     message: "What department is this role in?",
-//                     choices: () => {
-//                         let departmentArray = [];
-//                         for (let i = 0; i < res.length; i++) {
-//                             departmentArray.push(res[i].dept_name + " | " + res[i].id);
-//                         }
-//                         return departmentArray;
-//                     },
-//                 },
-//             ])
-//             .then(function (choice) {
-//                 let dept = choice.department.split("|")[i];
+function addRole() {
+    // Expected Behavior: Enter role name, salary + department then add to db
+    connection.query("SELECT * FROM department", (err, res) => {
+        if (err) {
+            console.log(err)}
+            return inquirer.prompt([
+                    {
+                        type: "input",
+                        name: "role",
+                        message: "Enter a new role",
+                    },
+                    {
+                        type: "input",
+                        name: "salary",
+                        message: "Enter the salary for this role",
+                    },
+                    {
+                        type: "list",
+                        name: "department",
+                        message: "What department is this role in?",
+                        choices: () => {
+                            let departmentArray = [];
+                            for (let i = 0; i < res.length; i++) {
+                                departmentArray.push(res[i].department_name + " | " + res[i].id);
+                    }
+                    return departmentArray;
+                },
+            },
+        ])
+        .then(function (choice) {
+            let dept = choice.department.split("|")[1];
 
-//                 connection.query(
-//                     `INSERT INTO employee (title, department_id, salary) VALUES ("${choice.role}", ${dept}, "${choice.salary}") `,
+            connection.query(
+                `INSERT INTO employee (title, department_id, salary) VALUES ("${choice.role}", ${dept}, "${choice.salary}") `,
+                (err) => {
+                    if (err) {
+                        console.log(err)
+                    }
+                    console.log(`"${choice.role}" added successfully!`);
+                    init();
+                    }
+                )
+            })
+        }
+    )
+};
 
-//                     (err) => {
-//                         if (err) {
-//                             console.log(err)
-//                         }
-//                     console.log(`"${choice.role}" added successfully!`);
-//                     init();
-//                     }
-//                 )
-//             })
-//         }
-//     })
-// };
-
-// function addEmployee() {
-//     // Expected Behavior: Enter employee id, first name, last name, salary, dept, + manager then add to db
-//     connection.query('SELECT FROM roles', (err, res) => {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             return inquirer.prompt([
-//                 {
-//                     type: "input",
-//                     name: "firstName",
-//                     message: "Enter the employee's first name",
-//                     validate: (answer) => {
-//                         if (answer !== "") {
-//                             return true;
-//                         } else {
-//                     return "First name cannot be blank";
-//                         }
-//                     }
-//                 },
-//                 {
-//                     type: "input",
-//                     name: "lastName",
-//                     message: "Enter the employee's last name",
-//                     validate: (answer) => {
-//                         if (answer === "") {
-//                             return true;
-//                         } else {
-//                     return "Last name cannot be blank";
-//                         }
-//                     }
-//                 },
-//                 {
-//                     type: "input",
-//                     name: "roleId",
-//                     message: "Enter the employee's role ID",
-//                     validate: (answer) => {
-//                         if (answer === isNaN) {
-//                             return "Employee role ID must be numerical";
-//                         } else {
-//                     return true; 
-//                         }
-//                     }
-//                 },
-//                 {
-//                     type: "input",
-//                     name: "managerId",
-//                     message: "Enter the employee's manager ID",
-//                     validate: (answer) => {
-//                         if (answer === isNaN) {
-//                             return "Manager ID must be numerical";
-//                         } else {
-//                     return true; 
-//                         }
-//                     }
-//                 },
-//             ])
-//             .then(function (answer) {
-//                 connection.query(
-//                     "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
-//                     [answer.firstName, answer.lastName, answer.roleId, answer.managerId],
-//                     function (err, res) {
-//                         if (err) {
-//                             console.log (err)
-//                         } 
-//                         console.log(
-//                             `${answer.firstName} ${answer.lastName} has been added to the team!`
-//                         );
+function addEmployee() {
+    // Expected Behavior: Enter employee id, first name, last name, salary, dept, + manager then add to db
+    connection.query('SELECT * FROM role', (err, res) => {
+        if (err) {
+            console.log(err)
+        } else {
+            return inquirer.prompt([
+                {
+                    type: "input",
+                    name: "firstName",
+                    message: "Enter the employee's first name",
+                    validate: (answer) => {
+                        if (answer !== "") {
+                            return true;
+                        } else {
+                    return "First name cannot be blank";
+                        }
+                    }
+                },
+                {
+                    type: "input",
+                    name: "lastName",
+                    message: "Enter the employee's last name",
+                    validate: (answer) => {
+                        if (answer !== "") {
+                            return true;
+                        } else {
+                        return "Last name cannot be blank";
+                        }
+                    }
+                },
+                {
+                    type: "input",
+                    name: "roleId",
+                    message: "Enter the employee's role ID",
+                    validate: (answer) => {
+                        if (answer === isNaN) {
+                            return "Employee role ID must be numerical";
+                        } else {
+                    return true; 
+                        }
+                    }
+                },
+                {
+                    type: "input",
+                    name: "managerId",
+                    message: "Enter the employee's manager ID",
+                    validate: (answer) => {
+                        if (answer === isNaN) {
+                            return "Manager ID must be numerical";
+                        } else {
+                    return true; 
+                        }
+                    }
+                },
+            ])
+            .then(function (answer) {
+                connection.query(
+                    "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+                    [answer.firstName, answer.lastName, answer.roleId, answer.managerId],
+                    function (err, res) {
+                        if (err) {
+                            console.log (err)
+                        } 
+                        console.log(
+                            `${answer.firstName} ${answer.lastName} has been added to the team!`
+                        );
                     
-//                         console.log("Employee added successfully!");
-//                         init();
-//                     }
-//                 )
-//             })
-//         }
-//     })
-// }
+                        console.log("Employee added successfully!");
+                        init();
+                    }
+                )
+            })
+        }
+    })
+}
 
-// function updateEmployee() {
-//     // Expected Behavior: Enter new employee role, then add to db
+function updateEmployee() {
+    // Expected Behavior: Enter new employee role, then add to db
 
-// }
+}
