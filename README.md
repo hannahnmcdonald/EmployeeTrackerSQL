@@ -50,7 +50,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 ## Video
 
-
+Click [here](https://drive.google.com/file/d/1arT0cE2JPkSdhy_z62KUGNMt_O85MmXe/view?usp=sharing) to see the video walkthrough! 
 
 
 ## Technologies
