@@ -19,7 +19,7 @@ VALUES
 
 INSERT INTO department (department_name) 
 VALUES  
-        ("Manager"),
-        ("Assistant Manager"),
-        ("Sales Representative"),
-        ("Secretary");
+        ("Management"),
+        ("Sales"),
+        ("Office Management"),
+        ("Accounting");
