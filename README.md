@@ -6,10 +6,6 @@
 
 A simple employee tracker application run in the command line made from MySQL, npm Inquirer, and Node.js.
 
-## Deployed Application
-
-Click [here](https://still-dawn-65354.herokuapp.com/) to see the deployed application on Heroku
-
 ## User Story
  
 ```
