@@ -149,7 +149,7 @@ function addDept() {
         // Validates that userInput is not blank
         validate: (userInput) => {
             if (userInput !== "") {
-                return "Employee role ID cannot be empty";
+                return "Department name cannot be empty";
             } else {
         return true; 
             }
