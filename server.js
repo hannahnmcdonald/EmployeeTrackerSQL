@@ -146,6 +146,14 @@ function addDept() {
         type: "input",
         name: "departmentName",
         message: "What is the new department name?",
+        // Validates that userInput is not blank
+        validate: (userInput) => {
+            if (userInput !== "") {
+                return "Employee role ID cannot be empty";
+            } else {
+        return true; 
+            }
+        }
     })
     .then((userInput) => {
             let departmentName = userInput.departmentName;
@@ -177,7 +185,7 @@ function addRole() {
                         // Validate to make sure answer is not blank
                         validate: (userInput) => {
                             if (userInput !== "") {
-                                return "Employee role ID must be numerical";
+                                return "Role ID cannot be blank";
                             } else {
                         return true; 
                             }
@@ -190,7 +198,7 @@ function addRole() {
                          // Validate to make sure answer is numerical
                         validate: (userInput) => {
                             if (userInput === isNaN) {
-                                return "Employee role ID must be numerical";
+                                return "Salary must be numerical";
                             } else {
                         return true; 
                             }
@@ -204,9 +212,10 @@ function addRole() {
                             let departmentArray = [];
                             // Creates an array from the department table data from the mysql query
                             for (let i = 0; i < res.length; i++) {
-                            // Pushes department name & Id
+                            // Pushes department name & Id to array
                             departmentArray.push(res[i].department_name + " | " + res[i].id);
                     }
+                    // Returns new departmentArray
                     return departmentArray;
                 },
             },
@@ -335,6 +344,7 @@ function updateEmployee() {
                     //   Pushes the first name and last name from the array
                     employeeArray.push(res[i].first_name + " " + res[i].last_name);
                   }
+                //   Returns new employeeArray
                   return employeeArray;
                 },
               },
@@ -356,15 +366,15 @@ function updateEmployee() {
                         let roleArray = [];
                         // Role Array created from the result of the mysql query for the role table
                         for (let i = 0; i < res.length; i++) {
-                            // Pushes the role title & ID from the array
+                        // Pushes the role title & ID from the array
                           roleArray.push(res[i].title + " | " + res[i].id);
                         }
-                        console.log();
+                        // Returns new roleArray
                         return roleArray;
                       },
                     },
                   ])
-                  .then((userInput) => {
+                  .then(function (userInput) {
                     // This splits the employee and the role
                     let roleId = userInput.role.split("|")[1];
                     let query3 = `UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${fullName[0]}" and last_name = "${fullName[1]}"`
