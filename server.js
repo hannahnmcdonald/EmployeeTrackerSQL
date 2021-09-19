@@ -175,8 +175,8 @@ function addDept() {
 
 function addRole() {
     // Expected Behavior: Enter role name, salary + department then add to db
-    let query = "SELECT * FROM department";
-    connection.query(query, (err, res) => {
+    let query1 = "SELECT * FROM department";
+    connection.query(query1, (err, res) => {
         // Console logs error if error exists
         if (err) {
             console.log(err)
@@ -227,8 +227,8 @@ function addRole() {
         .then(function (userInput) {
             // Splits dept with '|' in the middle
             let dept = userInput.department.split("|")[1];
-            let query = `INSERT INTO role (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `;
-            connection.query(query, (err, res) => {
+            let query2 = `INSERT INTO role (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `;
+            connection.query(query2, (err, res) => {
                 // Console logs error
                     if (err) {
                         console.log(err)
