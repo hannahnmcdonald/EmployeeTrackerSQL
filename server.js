@@ -59,7 +59,7 @@ function init(connection) {
             'Add employee',
             'Update employee role',
         ]}
-    ]).then((userInput) => {
+    ]).then(function (userInput) {
         switch(userInput.options) {
             // Calls viewDept function
             case ('View all departments'): viewDepts();
@@ -155,7 +155,7 @@ function addDept() {
             }
         }
     })
-    .then((userInput) => {
+    .then(function (userInput) {
         // Create departmentName Variable to insert into query
             let departmentName = userInput.departmentName;
             let query = `INSERT INTO department (department_name) VALUES ("${departmentName}")`;
@@ -355,7 +355,7 @@ function updateEmployee() {
                 },
               },
             ])
-            .then((userInput) => {
+            .then(function (userInput) {
             // Combine first name + last name
               let fullName = userInput.name;
             //   console.log(fullName);
