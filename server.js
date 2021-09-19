@@ -98,7 +98,8 @@ function init(connection) {
 function viewDepts() {
     // Expected Behavior: Show dept names + Ids
     // TEST: console.log("Viewing all departments");
-    connection.query("SELECT * FROM department", function (err, res) {
+    let query = "SELECT * FROM department";
+    connection.query(query, function (err, res) {
         if (err) {
             console.log(err)
         };
@@ -112,7 +113,8 @@ function viewDepts() {
 function viewRoles() {
     // Expected Behavior: Show job title, role id, department + salary
     // TEST: console.log("Viewing all roles");
-    connection.query("SELECT * FROM role", function (err, res) {
+    let query = "SELECT * FROM role";
+    connection.query(query, function (err, res) {
         if (err) {
             console.log(err)
         };
@@ -126,7 +128,8 @@ function viewRoles() {
 function viewEmployees() {
     // Expected Behavior: Show employee id, first name, last name, job title, department, sallaries, + managers
     // TEST: console.log("Viewing employees");
-    connection.query("SELECT * FROM employee", (err, res) => {
+    let query = "SELECT * FROM employee";
+    connection.query(query, (err, res) => {
         if (err) {
             console.log(err)
         };
@@ -146,8 +149,8 @@ function addDept() {
     })
     .then((userInput) => {
             let departmentName = userInput.departmentName;
-
-            connection.query(`INSERT INTO department (department_name) VALUES ("${departmentName}")`, (err, res) => {
+            let query = `INSERT INTO department (department_name) VALUES ("${departmentName}")`;
+            connection.query(query, (err, res) => {
                 // Console logs if error occurs
                 if (err) {
                     console.log(err);
@@ -162,7 +165,8 @@ function addDept() {
 
 function addRole() {
     // Expected Behavior: Enter role name, salary + department then add to db
-    connection.query("SELECT * FROM department", (err, res) => {
+    let query = "SELECT * FROM department";
+    connection.query(query, (err, res) => {
         if (err) {
             console.log(err)}
             return inquirer.prompt([
@@ -194,7 +198,8 @@ function addRole() {
         .then(function (userInput) {
             // Splits dept
             let dept = userInput.department.split("|")[1];
-            connection.query(`INSERT INTO role (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `, (err, res) => {
+            let query = `INSERT INTO role (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `;
+            connection.query(query, (err, res) => {
                 // Console logs error
                     if (err) {
                         console.log(err)
@@ -211,7 +216,8 @@ function addRole() {
 
 function addEmployee() {
     // Expected Behavior: Enter employee id, first name, last name, salary, dept, + manager then add to db
-    connection.query('SELECT * FROM role', (err, res) => {
+    let query = 'SELECT * FROM role';
+    connection.query(query, (err, res) => {
         if (err) {
             console.log(err)
         } else {
@@ -272,7 +278,8 @@ function addEmployee() {
             ])
             .then(function (userInput) {
                 // Inserts new userInput data into employee table
-                connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`,
+                let query2 = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+                connection.query(query2,
                 [userInput.firstName, userInput.lastName, userInput.roleId, userInput.managerId],(err, res) => {
                         // Console Logs error if there is one
                         if (err) {
@@ -291,7 +298,8 @@ function addEmployee() {
 
 function updateEmployee() {
 // Expected Behavior: Enter new employee role, then add to db
-    connection.query("SELECT * FROM employee", (err, res) => {
+    let query = "SELECT * FROM employee";
+    connection.query(query, (err, res) => {
         // Console Logs error if there is one
         if (err) {
             console.log(err)
@@ -319,7 +327,8 @@ function updateEmployee() {
             // Combine first name + last name
               let fullName = userInput.name;
               console.log(fullName);
-              connection.query("SELECT * FROM role", (err, res) => {
+              let query2 = "SELECT * FROM role";
+              connection.query(query2, (err, res) => {
                 inquirer
                 // Prompt asks what role you would like to assign
                   .prompt([
@@ -342,8 +351,9 @@ function updateEmployee() {
                   .then((userInput) => {
                     // This splits the employee and the role
                     let roleId = userInput.role.split("|")[1];
+                    let query3 = `UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${fullName[0]}" and last_name = "${fullName[1]}"`
                     // Updates the DB with the role- uses the indexes of fullName for first/last name
-                    connection.query(`UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${fullName[0]}" and last_name = "${fullName[1]}"`, (err, res) => {
+                    connection.query(query3, (err, res) => {
                         if (err) {
                             console.log(err)
                         };
