@@ -174,11 +174,27 @@ function addRole() {
                         type: "input",
                         name: "role",
                         message: "Enter a new role",
+                        // Validate to make sure answer is not blank
+                        validate: (userInput) => {
+                            if (userInput !== "") {
+                                return "Employee role ID must be numerical";
+                            } else {
+                        return true; 
+                            }
+                        }
                     },
                     {
                         type: "input",
                         name: "salary",
                         message: "Enter the salary for this role",
+                         // Validate to make sure answer is numerical
+                        validate: (userInput) => {
+                            if (userInput === isNaN) {
+                                return "Employee role ID must be numerical";
+                            } else {
+                        return true; 
+                            }
+                        }
                     },
                     {
                         type: "list",
