@@ -156,6 +156,7 @@ function addDept() {
         }
     })
     .then((userInput) => {
+        // Create departmentName Variable to insert into query
             let departmentName = userInput.departmentName;
             let query = `INSERT INTO department (department_name) VALUES ("${departmentName}")`;
             connection.query(query, (err, res) => {
@@ -163,6 +164,7 @@ function addDept() {
                 if (err) {
                     console.log(err);
                 }
+                // Console logs success!
                 console.log(`${departmentName} has been added to departments!`);
             }
         );
@@ -175,8 +177,10 @@ function addRole() {
     // Expected Behavior: Enter role name, salary + department then add to db
     let query = "SELECT * FROM department";
     connection.query(query, (err, res) => {
+        // Console logs error if error exists
         if (err) {
-            console.log(err)}
+            console.log(err)
+        }
             return inquirer.prompt([
                     {
                         type: "input",
@@ -221,7 +225,7 @@ function addRole() {
             },
         ])
         .then(function (userInput) {
-            // Splits dept
+            // Splits dept with '|' in the middle
             let dept = userInput.department.split("|")[1];
             let query = `INSERT INTO role (title, department_id, salary) VALUES ("${userInput.role}", ${dept}, "${userInput.salary}") `;
             connection.query(query, (err, res) => {
@@ -243,6 +247,7 @@ function addEmployee() {
     // Expected Behavior: Enter employee id, first name, last name, salary, dept, + manager then add to db
     let query = 'SELECT * FROM role';
     connection.query(query, (err, res) => {
+        // Console logs error if error exists
         if (err) {
             console.log(err)
         } else {
@@ -337,6 +342,7 @@ function updateEmployee() {
                 type: "list",
                 name: "name",
                 message: "Whose role are you updating?",
+                // User's choices from array from employee table
                 choices: () => {
                   let employeeArray = [];
                   //Creates array of employees from the result of the mysql query for the employee table
@@ -352,7 +358,7 @@ function updateEmployee() {
             .then((userInput) => {
             // Combine first name + last name
               let fullName = userInput.name;
-              console.log(fullName);
+            //   console.log(fullName);
               let query2 = "SELECT * FROM role";
               connection.query(query2, (err, res) => {
                 inquirer
@@ -362,6 +368,7 @@ function updateEmployee() {
                       type: "list",
                       name: "role",
                       message: `What role would you like to assign to ${fullName}?`,
+                    //   User's choices are from array made from the roles in roles table
                       choices: () => {
                         let roleArray = [];
                         // Role Array created from the result of the mysql query for the role table
@@ -375,14 +382,17 @@ function updateEmployee() {
                     },
                   ])
                   .then(function (userInput) {
-                    // This splits the employee and the role
+                    // This splits the employee and the role with '|" in the middle to seperate"
                     let roleId = userInput.role.split("|")[1];
+                    // Places new role WHERE the indicated name is
                     let query3 = `UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${fullName[0]}" and last_name = "${fullName[1]}"`
                     // Updates the DB with the role- uses the indexes of fullName for first/last name
                     connection.query(query3, (err, res) => {
+                        // Console logs if error exists
                         if (err) {
                             console.log(err)
                         };
+                        // Console logs success!
                         console.log(`${fullName} role changed successfully`);
                         // Returns to main questions prompt
                         init();
@@ -394,7 +404,3 @@ function updateEmployee() {
         );
     });
 };
-
-
-
-
