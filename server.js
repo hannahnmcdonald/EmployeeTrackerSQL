@@ -221,7 +221,7 @@ function addEmployee() {
                     type: "input",
                     name: "firstName",
                     message: "Enter the employee's first name",
-                    // Validate to make sure answer is string
+                    // Validate to make sure answer is not blank
                     validate: (userInput) => {
                         if (userInput !== "") {
                             return true;
@@ -234,7 +234,7 @@ function addEmployee() {
                     type: "input",
                     name: "lastName",
                     message: "Enter the employee's last name",
-                    // Validate to make sure answer is string
+                    // Validate to make sure answer is not blank
                     validate: (userInput) => {
                         if (userInput !== "") {
                             return true;
@@ -339,9 +339,9 @@ function updateEmployee() {
                       },
                     },
                   ])
-                  .then((choice) => {
+                  .then((userInput) => {
                     // This splits the employee and the role
-                    let roleId = choice.role.split("|")[1];
+                    let roleId = userInput.role.split("|")[1];
                     // Updates the DB with the role- uses the indexes of fullName for first/last name
                     connection.query(`UPDATE employee SET role_id = "${roleId}" WHERE first_name = "${fullName[0]}" and last_name = "${fullName[1]}"`, (err, res) => {
                         if (err) {
